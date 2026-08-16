@@ -1,0 +1,65 @@
+/* Polices auto-hébergées (sous-ensemble latin) — voir README pour la provenance et la licence. */
+
+@font-face {
+  font-family: "Bungee";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/bungee-v17-latin-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Karla";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/karla-v33-latin-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Karla";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/karla-v33-latin-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Karla";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/karla-v33-latin-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Karla";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("../fonts/karla-v33-latin-variable.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("../fonts/ibmplexmono-v20-latin-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("../fonts/ibmplexmono-v20-latin-500.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "IBM Plex Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("../fonts/ibmplexmono-v20-latin-700.woff2") format("woff2");
+}
