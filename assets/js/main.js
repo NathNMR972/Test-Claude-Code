@@ -42,6 +42,24 @@
   };
 
   var MARQUES_DIACRITIQUES = new RegExp("[̀-ͯ]", "g");
+  var CLE_STOCKAGE = "5sr-etat-demo";
+
+  function lireEtatEnregistre() {
+    try {
+      var brut = window.localStorage.getItem(CLE_STOCKAGE);
+      return brut ? JSON.parse(brut) : null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function enregistrerEtat(etat) {
+    try {
+      window.localStorage.setItem(CLE_STOCKAGE, JSON.stringify(etat));
+    } catch (err) {
+      // stockage indisponible (navigation privée, quota) — sans conséquence ici
+    }
+  }
 
   function slugifier(texte) {
     var t = (texte || "").trim();
@@ -164,6 +182,7 @@
       }
       dessinerQR(urlAbsolue);
       rejouerTampon();
+      enregistrerEtat({ nom: etat.nom.trim(), secteur: etat.secteur, couleur: etat.couleur });
     }
 
     function dessinerQR(texte) {
@@ -206,20 +225,88 @@
     appliquerCouleur();
     genererApercu();
     window.setTimeout(rejouerTampon, 450);
+
+    // Bascule QR code / Puce NFC : les deux mènent à la même page générée,
+    // seule la façon de l'atteindre en salle change.
+    var boutonsCanal = Array.prototype.slice.call(document.querySelectorAll(".canal-btn"));
+    var vueQr = document.getElementById("canal-vue-qr");
+    var vueNfc = document.getElementById("canal-vue-nfc");
+    boutonsCanal.forEach(function (bouton) {
+      bouton.addEventListener("click", function () {
+        var canal = bouton.getAttribute("data-canal");
+        boutonsCanal.forEach(function (b) {
+          b.setAttribute("aria-pressed", String(b === bouton));
+        });
+        vueQr.hidden = canal !== "qr";
+        vueNfc.hidden = canal !== "nfc";
+      });
+    });
   }
 
   /* ---------------------------------------------------------------------
-     Formulaire de contact — démonstration front-end uniquement.
+     Formulaire de contact.
+     Sans JS : soumission classique (action="apercu.html" method="get"),
+     le navigateur atterrit directement sur la page générée.
+     Avec JS : confirmation, puis redirection vers la même page — en
+     réutilisant la couleur choisie dans la démo si le visiteur l'a essayée.
      ------------------------------------------------------------------- */
   var contactForm = document.getElementById("contact-form");
   if (contactForm) {
+    var contactNom = document.getElementById("contact-nom");
+    var contactSecteur = document.getElementById("contact-secteur");
+
+    // Préremplit au premier contact réel avec le formulaire (pas au chargement
+    // de la page) pour refléter ce que le visiteur a exploré dans la démo,
+    // même s'il l'a essayée après le chargement initial.
+    contactForm.addEventListener(
+      "focusin",
+      function preremplir() {
+        contactForm.removeEventListener("focusin", preremplir);
+        var etatEnregistre = lireEtatEnregistre();
+        if (!etatEnregistre) return;
+        if (!contactNom.value && etatEnregistre.nom) {
+          contactNom.value = etatEnregistre.nom;
+        }
+        if (etatEnregistre.secteur) {
+          contactSecteur.value = etatEnregistre.secteur;
+        }
+      },
+      { once: true }
+    );
+
+    var minuteurRedirection = null;
+
     contactForm.addEventListener("submit", function (e) {
+      if (typeof contactForm.reportValidity === "function" && !contactForm.reportValidity()) {
+        return;
+      }
       e.preventDefault();
+
+      var couleur = (lireEtatEnregistre() || {}).couleur || "#E6355C";
+      var params = new URLSearchParams({
+        nom: contactNom.value.trim() || "Votre Commerce",
+        secteur: contactSecteur.value,
+        couleur: couleur,
+        depuis: "contact"
+      });
+      var urlApercu = "apercu.html?" + params.toString();
+
       var confirmation = document.getElementById("contact-confirmation");
+      var lienVoirPage = document.getElementById("contact-voir-page");
+      lienVoirPage.setAttribute("href", urlApercu);
+      lienVoirPage.addEventListener("click", function () {
+        window.clearTimeout(minuteurRedirection);
+      });
+
       contactForm.setAttribute("hidden", "");
       confirmation.removeAttribute("hidden");
       confirmation.setAttribute("tabindex", "-1");
       confirmation.focus();
+
+      window.clearTimeout(minuteurRedirection);
+      minuteurRedirection = window.setTimeout(function () {
+        window.location.href = urlApercu;
+      }, 4500);
     });
   }
 })();

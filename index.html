@@ -70,6 +70,14 @@
   <symbol id="icone-fleche" viewBox="0 0 24 24">
     <path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" d="M5 12h13M13 6l6 6-6 6"/>
   </symbol>
+
+  <symbol id="icone-nfc-signal" viewBox="0 0 100 96">
+    <rect x="32" y="66" width="36" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="3"/>
+    <circle cx="50" cy="76" r="2.6" fill="currentColor"/>
+    <path class="nfc-onde nfc-onde-1" d="M 31.2,67.2 A 20,20 0 0 1 68.8,67.2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+    <path class="nfc-onde nfc-onde-2" d="M 19.9,63.1 A 32,32 0 0 1 80.1,63.1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path class="nfc-onde nfc-onde-3" d="M 8.7,59.0 A 44,44 0 0 1 91.3,59.0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+  </symbol>
 </defs>
 </svg>
 
@@ -87,6 +95,7 @@
         <li><a href="#comment-ca-marche">Comment ça marche</a></li>
         <li><a href="#demo">La démo</a></li>
         <li><a href="#tarifs">Tarifs</a></li>
+        <li><a href="#faq">FAQ</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </nav>
@@ -265,9 +274,22 @@
             <svg class="tampon telephone-tampon" id="demo-tampon" aria-hidden="true"><use href="#tampon-etoile"/></svg>
           </div>
 
-          <div class="qr-carte reveal">
-            <canvas id="demo-qr" width="180" height="180" role="img" aria-label="QR code menant vers la page générée"></canvas>
-            <p class="qr-legende mono" id="demo-url">5starsreview.fr/avis/le-bon-poulet</p>
+          <div class="qr-carte reveal" id="demo-sortie-carte">
+            <div class="canal-choix" role="group" aria-label="Support de collecte à afficher">
+              <button type="button" class="canal-btn" data-canal="qr" aria-pressed="true">QR code</button>
+              <button type="button" class="canal-btn" data-canal="nfc" aria-pressed="false">Puce NFC</button>
+            </div>
+
+            <div class="canal-vue canal-vue--qr" id="canal-vue-qr">
+              <canvas id="demo-qr" width="180" height="180" role="img" aria-label="QR code menant vers la page générée"></canvas>
+              <p class="qr-legende mono" id="demo-url">5starsreview.fr/avis/le-bon-poulet</p>
+            </div>
+
+            <div class="canal-vue canal-vue--nfc" id="canal-vue-nfc" hidden>
+              <svg class="nfc-picto" aria-hidden="true"><use href="#icone-nfc-signal"/></svg>
+              <p class="qr-legende mono">On approche le téléphone — pas de caméra à viser, pas d'appli à ouvrir</p>
+            </div>
+
             <a href="apercu.html" target="_blank" rel="noopener" class="qr-lien" id="demo-ouvrir">
               Ouvrir la page <svg width="16" height="16" aria-hidden="true"><use href="#icone-fleche"/></svg>
             </a>
@@ -374,6 +396,48 @@
     </div>
   </section>
 
+  <!-- ============ FAQ ============ -->
+  <section class="section--dim" id="faq">
+    <div class="container faq-grille">
+      <div class="faq-tete reveal">
+        <span class="kicker">Les questions qu'on nous pose</span>
+        <h2>Avant de vous décider.</h2>
+        <p class="lead">Ce que les gérants nous demandent le plus souvent, sans détour.</p>
+      </div>
+
+      <div class="faq-liste reveal">
+        <details class="faq-item">
+          <summary>Combien de temps avant d'être en ligne ?</summary>
+          <p>Deux à trois jours ouvrés entre votre inscription et votre page en ligne, une fois votre logo et vos couleurs reçus. Le QR code et la puce NFC suivent dans la foulée.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Je n'ai pas encore de fiche Google, ça marche quand même ?</summary>
+          <p>On vous aide à la créer, ou à la retrouver si elle existe déjà mais que vous ne savez plus où. C'est la première chose qu'on vérifie ensemble avant de configurer votre page.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Le QR code et la puce NFC, c'est fourni ?</summary>
+          <p>Oui, imprimés et programmés par nos soins, prêts à poser sur la table, le comptoir ou l'addition. Le nombre de supports dépend de la formule choisie (voir Tarifs).</p>
+        </details>
+        <details class="faq-item">
+          <summary>Je change de local ou de nom, il faut tout refaire ?</summary>
+          <p>Non. Le QR et la puce pointent vers 5starsreview.fr, pas directement vers votre fiche Google — on met à jour la destination de notre côté, le support physique ne bouge pas.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Il y a un engagement ?</summary>
+          <p>Non, c'est mensuel et sans engagement long. Vous testez un mois, vous décidez ensuite de continuer ou non.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Et si un client laisse un avis négatif à cause du QR code ?</summary>
+          <p>Il part vers Google comme n'importe quel autre avis. On ne filtre jamais — voir plus haut — et ça reste vrai même le jour où ça vous arrange moins.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Ça remplace mes réseaux sociaux ou une agence marketing ?</summary>
+          <p>Non. 5 Stars Review fait une seule chose : transformer un client satisfait en avis Google, avec le moins de friction possible. Le reste, c'est un autre métier.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ CONTACT ============ -->
   <section class="contact section--inverse" id="contact">
     <div class="container contact-grille">
@@ -389,10 +453,10 @@
       </div>
 
       <div class="reveal">
-        <form class="formulaire" id="contact-form" novalidate>
+        <form class="formulaire" id="contact-form" action="apercu.html" method="get">
           <div class="champ">
             <label for="contact-nom">Nom du commerce</label>
-            <input type="text" id="contact-nom" name="commerce" required autocomplete="organization">
+            <input type="text" id="contact-nom" name="nom" required autocomplete="organization">
           </div>
           <div class="champ">
             <label for="contact-secteur">Secteur d'activité</label>
@@ -415,13 +479,15 @@
             <textarea id="contact-message" name="message" placeholder="Un lien vers votre fiche Google, si vous l'avez sous la main."></textarea>
           </div>
           <button type="submit" class="btn btn-primary">Demander ma démo</button>
-          <p class="formulaire-pied">Réponse sous 24h ouvrées. Basés en Martinique.</p>
+          <p class="formulaire-pied">On vous montre tout de suite un aperçu de votre page. Réponse sous 24h ouvrées.</p>
         </form>
 
         <div class="formulaire confirmation" id="contact-confirmation" hidden>
           <svg class="tampon tampon--sceau" aria-hidden="true"><use href="#tampon-etoile"/></svg>
           <h3>Demande reçue.</h3>
-          <p>On revient vers vous sous 24h ouvrées pour construire votre page ensemble.</p>
+          <p>On revient vers vous sous 24h ouvrées pour construire votre page ensemble. En attendant, voici à quoi elle pourrait ressembler.</p>
+          <a href="apercu.html" id="contact-voir-page" class="btn btn-primary">Voir ma page maintenant <svg width="16" height="16" aria-hidden="true"><use href="#icone-fleche"/></svg></a>
+          <p class="formulaire-pied" id="contact-redirection-note">Redirection automatique dans quelques secondes…</p>
         </div>
       </div>
     </div>
@@ -440,7 +506,10 @@
         <li><a href="#comment-ca-marche">Comment ça marche</a></li>
         <li><a href="#demo">La démo</a></li>
         <li><a href="#tarifs">Tarifs</a></li>
+        <li><a href="#faq">FAQ</a></li>
         <li><a href="#contact">Contact</a></li>
+        <li><a href="mentions-legales.html">Mentions légales</a></li>
+        <li><a href="confidentialite.html">Confidentialité</a></li>
       </ul>
     </nav>
     <p class="pied-mentions">© 2026 5 Stars Review, Martinique. « Google » et « Google Avis » sont des marques de Google LLC ; 5 Stars Review n'est pas affilié à Google.</p>

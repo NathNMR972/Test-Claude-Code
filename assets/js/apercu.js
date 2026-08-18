@@ -22,7 +22,17 @@
   var couleurBrute = params.get("couleur") || COULEUR_PAR_DEFAUT;
   var couleur = COULEUR_VALIDE.test(couleurBrute) ? couleurBrute : COULEUR_PAR_DEFAUT;
 
-  document.title = nom + " — avis Google (démonstration 5 Stars Review)";
+  var depuisContact = params.get("depuis") === "contact";
+
+  document.title = depuisContact
+    ? nom + " — aperçu de votre page 5 Stars Review"
+    : nom + " — avis Google (démonstration 5 Stars Review)";
+
+  if (depuisContact) {
+    document.getElementById("apercu-tag").textContent = "Aperçu de votre future page";
+    var banniere = document.getElementById("apercu-banniere");
+    banniere.hidden = false;
+  }
 
   document.getElementById("apercu-nom").textContent = nom;
   document.getElementById("apercu-secteur").textContent = infoSecteur.label;

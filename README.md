@@ -9,6 +9,31 @@ Aucun framework, aucun build, aucun backend : HTML, CSS et JavaScript natifs.
 Le site fonctionne entièrement dans le navigateur, avec des données factices
 pour la démo.
 
+## Nouveautés V2
+
+- **Le formulaire « Demander ma démo » redirige réellement** vers une page
+  générée (`apercu.html?...&depuis=contact`), avec une bannière dédiée « ceci
+  est un aperçu de votre future page ». S'il a testé la démo plus haut sur la
+  page, ses choix (nom, secteur, couleur) préremplissent le formulaire — la
+  couleur en particulier est réutilisée pour générer une page cohérente avec
+  ce qu'il a déjà vu. Le formulaire fonctionne aussi **sans JavaScript**
+  (`action="apercu.html" method="get"`) : il redirige quand même, juste sans
+  l'animation de confirmation.
+- **Bascule QR code / Puce NFC** dans la démo : les deux mènent à la même
+  page, seul le geste change (scanner vs. poser son téléphone) — reflète le
+  brief, qui met les deux canaux à égalité.
+- **Section FAQ** (`#faq`, accordéon `<details>/<summary>` natif, donc
+  accessible sans JavaScript) qui répond aux objections qui n'avaient pas
+  encore de réponse sur le site : délai de mise en ligne, matériel fourni,
+  changement de local, engagement, avis négatif, complémentarité avec les
+  réseaux sociaux.
+- **Pages légales** (`mentions-legales.html`, `confidentialite.html`) — le
+  pied de page ne pointait vers rien de tel en V1. Les champs d'identité
+  légale (SIRET, adresse, hébergeur…) sont marqués `[à compléter]` plutôt que
+  remplis de fausses valeurs : voir « Hypothèses à trancher » plus bas.
+- **Page 404** (`404.html`) à l'identité du site plutôt que la page blanche
+  par défaut du navigateur.
+
 ## Ouvrir le site
 
 Aucune installation n'est nécessaire.
@@ -29,16 +54,20 @@ Aucune installation n'est nécessaire.
 ## Structure du dépôt
 
 ```
-index.html              La page vitrine complète (toutes les sections)
-apercu.html             La page générée par la démo — cible réelle du QR code
+index.html              La page vitrine complète (toutes les sections, dont #faq)
+apercu.html             La page générée par la démo et par le formulaire — cible réelle du QR code
+mentions-legales.html   Page légale (identité de l'éditeur à compléter)
+confidentialite.html    Politique de confidentialité (données démo vs. formulaire)
+404.html                Page d'erreur personnalisée
 assets/
   css/
     style.css           Tokens de design, typographie, layout, toutes les sections du site principal
     apercu.css          Styles propres à apercu.html (charge style.css puis complète)
+    legal.css           Styles des pages mentions-legales.html, confidentialite.html, 404.html
     fonts.css           Déclarations @font-face pour les polices auto-hébergées
   js/
-    main.js             Logique de la démo interactive (formulaire → aperçu → QR), révélation au scroll, formulaire de contact
-    apercu.js           Lit les paramètres d'URL (?nom=...&secteur=...&couleur=...) et personnalise apercu.html
+    main.js             Démo interactive (formulaire → aperçu → QR/NFC), révélation au scroll, formulaire de contact → redirection
+    apercu.js           Lit les paramètres d'URL (?nom=...&secteur=...&couleur=...&depuis=...) et personnalise apercu.html
     qrcode-lib.js        Bibliothèque tierce vendorisée pour générer le QR code (voir Crédits)
   fonts/
     bungee-*.woff2, karla-*.woff2, ibmplexmono-*.woff2   Sous-ensembles latins auto-hébergés
@@ -83,6 +112,11 @@ Le QR code encode l'URL absolue de `apercu.html` (résolue via
 `window.location.href`), donc si vous hébergez ce site sur un vrai domaine,
 le QR généré par la démo est un vrai QR scannable de bout en bout.
 
+Un sélecteur « QR code / Puce NFC » bascule entre le canvas du QR et un
+pictogramme NFC (onde qui pulse doucement, respecte `prefers-reduced-
+motion`) — les deux mènent au même lien « Ouvrir la page », pour rappeler
+que ce sont deux portes d'entrée équivalentes vers la même page.
+
 `apercu.html` lit ces paramètres (`nom`, `secteur`, `couleur`) et génère une
 page personnalisée. Les entrées sont systématiquement échappées
 (`textContent`, jamais `innerHTML`) et la couleur est validée par une regex
@@ -94,12 +128,36 @@ affiche une explication stylisée dans le langage visuel du site.
 ## Formulaire de contact
 
 Le formulaire de la section « Comment je commence » (`#contact-form`) est
-actuellement **front-end uniquement** : au clic sur « Demander ma démo », le
-JavaScript intercepte l'envoi et affiche une confirmation, mais aucune
-requête réseau n'est faite (contrainte du projet : aucun backend, aucune clé
-d'API). Avant mise en ligne réelle, il faut le relier à un service d'envoi
-(endpoint email, CRM, formulaire tiers type Netlify Forms/Formspree, etc.)
-dans `assets/js/main.js`, dans le gestionnaire `contactForm.addEventListener("submit", ...)`.
+**front-end uniquement** — aucune requête n'est envoyée à un serveur
+(contrainte du projet : aucun backend, aucune clé d'API) — mais il a un vrai
+effet : il redirige vers `apercu.html`, la même page générée que celle
+ouverte par le QR code de la démo, avec un bandeau « aperçu de votre future
+page ». C'est la maquette du bon moment de bascule pour le visiteur : il
+voit sa page avant même d'avoir eu de réponse humaine.
+
+- **Avec JavaScript** : le clic affiche une confirmation (le tampon, un
+  message), avec un bouton « Voir ma page maintenant » et une redirection
+  automatique après 4,5 secondes (délai volontairement long, annoncé à
+  l'écran, pour rester confortable au clavier et au lecteur d'écran).
+- **Sans JavaScript** : le formulaire garde `action="apercu.html"
+  method="get"` — la soumission classique du navigateur atterrit directement
+  sur `apercu.html` avec les bonnes valeurs dans l'URL, sans l'étape de
+  confirmation. Nuance : la personnalisation de cette page (nom, secteur,
+  couleur) est elle-même faite par `apercu.js` — un visiteur qui a
+  désactivé JavaScript sur tout le site verra donc la page générique par
+  défaut plutôt que sa version personnalisée. C'est la limite honnête d'un
+  site 100 % statique sans backend ; corriger ça demanderait un rendu côté
+  serveur.
+- Si le visiteur a déjà testé la démo plus haut sur la page, son nom, son
+  secteur et sa couleur (mémorisés dans `localStorage`, jamais transmis nul
+  part) préremplissent le formulaire au premier focus — pas besoin de tout
+  retaper.
+
+Avant mise en ligne réelle, il faut relier ce point d'entrée à un vrai canal
+de suivi (endpoint email, CRM, formulaire tiers type Netlify Forms/
+Formspree…) — la redirection vers l'aperçu peut rester telle quelle en plus
+de cet envoi. Le point d'intégration est le gestionnaire
+`contactForm.addEventListener("submit", ...)` dans `assets/js/main.js`.
 
 ## Accessibilité
 
@@ -113,6 +171,12 @@ dans `assets/js/main.js`, dans le gestionnaire `contactForm.addEventListener("su
   paires couleur de texte / fond utilisées.
 - `scroll-margin-top` sur les sections pour que les liens d'ancrage ne
   passent pas sous le header collant.
+- La FAQ utilise `<details>/<summary>` natifs : clavier, lecteurs d'écran et
+  fonctionnement sans JavaScript sont gérés par le navigateur, pas par du
+  code maison.
+- La redirection automatique du formulaire de contact (voir plus haut) est
+  annoncée à l'écran avant de se produire et reste évitable/accélérable via
+  un bouton — pas de changement de contexte surprise.
 
 ## Crédits
 
@@ -135,3 +199,8 @@ dans `assets/js/main.js`, dans le gestionnaire `contactForm.addEventListener("su
   moment de la rédaction, aucun commerce pilote n'était encore engagé.
   Dès qu'il l'est, remplacer le texte générique par son nom et, si les
   résultats le permettent, un chiffre réel.
+- `mentions-legales.html` et `confidentialite.html` contiennent des
+  `[champs à compléter]` (raison sociale, SIRET, adresse, hébergeur,
+  contact RGPD…) plutôt que des informations inventées. Ce sont les seules
+  pages du site à ne pas être « finies » intentionnellement — elles ne
+  doivent pas passer en ligne telles quelles.

@@ -39,6 +39,18 @@ body.page-apercu {
   padding: var(--space-s) var(--container-pad);
 }
 
+.apercu-banniere {
+  position: relative;
+  margin: 0 var(--container-pad) var(--space-s);
+  padding: 0.85rem 1.1rem;
+  background: rgba(247, 239, 230, 0.14);
+  border: 1px solid rgba(247, 239, 230, 0.3);
+  border-radius: var(--radius-s);
+  font-size: var(--text-xs);
+  text-align: center;
+  color: var(--ecume);
+}
+
 .apercu-retour {
   color: var(--ecume);
   text-decoration: none;

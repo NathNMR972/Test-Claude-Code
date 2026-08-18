@@ -1,0 +1,152 @@
+/* =========================================================================
+   Pages légales (mentions-legales.html, confidentialite.html, 404.html)
+   Même système que style.css : ici seulement la mise en page de l'article.
+   ========================================================================= */
+
+.page-legale main {
+  padding-block: clamp(3rem, 2.5rem + 3vw, 5rem);
+}
+
+/* main section {padding-block: var(--space-section)} (style.css) est pensée
+   pour les grandes sections de la page d'accueil ; on la neutralise ici, ces
+   <section> ne sont que des sous-parties d'un article. */
+.legal-corps section {
+  padding-block: 0;
+}
+
+.legal-entete {
+  max-width: 42rem;
+  margin-bottom: var(--space-l);
+  padding-bottom: var(--space-m);
+  border-bottom: 1px solid var(--line);
+}
+
+.legal-entete h1 {
+  font-size: var(--text-xl);
+  margin-block: var(--space-2xs) 0;
+}
+
+.legal-maj {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: var(--space-xs);
+}
+
+.legal-corps {
+  max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-l);
+}
+
+.legal-corps section h2 {
+  font-family: var(--font-texte);
+  font-weight: 800;
+  font-size: var(--text-md);
+  margin-bottom: var(--space-xs);
+}
+
+.legal-corps section p {
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.legal-corps section p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-corps a {
+  color: var(--encre);
+  text-decoration-color: var(--piment-texte);
+  text-decoration-thickness: 2px;
+}
+
+.legal-placeholder {
+  background: var(--papier-dim);
+  border-radius: var(--radius-s);
+  padding: 0.9rem 1.1rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.legal-retour {
+  display: inline-block;
+  margin-top: var(--space-l);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 2px solid var(--piment-texte);
+}
+
+/* ---------- 404 ----------------------------------------------------------*/
+
+body.page-404 {
+  background: var(--nuit);
+}
+
+.scene-404 {
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-l) var(--container-pad);
+  background: linear-gradient(165deg, var(--nuit-haut) 0%, var(--nuit) 55%, #0f2521 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.scene-404::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(247, 239, 230, 0.16) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.conteneur-404 {
+  position: relative;
+  max-width: 34rem;
+  text-align: center;
+  color: var(--text-inverse);
+}
+
+.kicker-404 {
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--soleil-clair);
+  margin-bottom: var(--space-s);
+}
+
+.chiffre-404 {
+  font-family: var(--font-affichage);
+  font-size: clamp(4.5rem, 3.5rem + 6vw, 8rem);
+  line-height: 1;
+  color: var(--soleil);
+  margin-bottom: var(--space-s);
+}
+
+.conteneur-404 h1 {
+  font-family: var(--font-affichage);
+  font-weight: 400;
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+  margin-bottom: var(--space-s);
+}
+
+.conteneur-404 .lead {
+  color: var(--text-inverse-muted);
+  max-width: 32ch;
+  margin-inline: auto;
+  margin-bottom: var(--space-l);
+}
+
+.actions-404 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-s);
+}
