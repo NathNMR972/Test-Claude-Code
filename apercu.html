@@ -58,7 +58,7 @@
 
 <div class="apercu-scene" id="scene">
   <header class="apercu-entete">
-    <a href="index.html" class="apercu-retour">← Retour au site 5 Stars Review</a>
+    <a href="index.html" class="apercu-retour" id="apercu-retour">← Retour au site 5 Stars Review</a>
     <span class="mono apercu-tag" id="apercu-tag">Page de démonstration</span>
   </header>
 
@@ -75,9 +75,14 @@
       <svg><use href="#etoile-mini"/></svg>
       <svg><use href="#etoile-mini"/></svg>
     </div>
-    <p class="apercu-phrase">Merci d'être passé. Un avis prend dix secondes et aide vraiment ce commerce à se faire connaître.</p>
+    <p class="apercu-phrase" id="apercu-phrase">Merci d'être passé. Un avis prend dix secondes et aide vraiment ce commerce à se faire connaître.</p>
     <button type="button" class="btn btn-blanc" id="apercu-cta">Voir mon avis Google</button>
     <p class="apercu-souscta mono">Vous seriez redirigé vers la vraie fiche Google — jamais filtrée.</p>
+
+    <div class="apercu-qr-bloc">
+      <canvas id="apercu-qr" width="116" height="116" role="img" aria-label="QR code menant vers cette page"></canvas>
+      <p class="mono">Ce QR mène à cette page</p>
+    </div>
   </main>
 
   <section class="apercu-simulation" id="apercu-simulation" hidden>
@@ -90,6 +95,7 @@
   <footer class="apercu-pied mono">Générée en direct par 5 Stars Review à partir de vos réponses. Aucune donnée n'est envoyée ni stockée.</footer>
 </div>
 
+<script src="assets/js/qrcode-lib.js"></script>
 <script src="assets/js/apercu.js"></script>
 </body>
 </html>

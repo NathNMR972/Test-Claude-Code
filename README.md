@@ -9,6 +9,40 @@ Aucun framework, aucun build, aucun backend : HTML, CSS et JavaScript natifs.
 Le site fonctionne entièrement dans le navigateur, avec des données factices
 pour la démo.
 
+## Nouveautés V3
+
+- **Corrections** : les boutons (`.btn`) n'étaient plus soulignés que par
+  accident de navigateur — ils le sont redevenus par erreur nulle part
+  maintenant (`text-decoration: none` explicite) ; seuls les vrais liens en
+  ligne (dans les paragraphes, le pied de page) gardent un soulignement. Le
+  formulaire de contact, qui ne menait nulle part, compose maintenant un
+  email pré-rempli — voir « Formulaire de contact » plus bas.
+- **Le hero montre le produit** : un chevalet-QR et un téléphone affichant la
+  page de Maison Blanche (le commerce pilote), reliés par un trait qui se
+  trace au chargement pendant que l'écran du téléphone apparaît — un seul
+  geste, une fois, en CSS/SVG pur (`#hero-scene` dans `index.html`,
+  déclenché par `assets/js/main.js`). Sur mobile, la scène s'empile sous le
+  texte plutôt que de disparaître.
+- **La démo redirige pour de vrai** : un champ « phrase d'accroche »
+  s'ajoute à nom/secteur/couleur ; le bouton « Voir ma page en ligne » valide
+  le nom (erreur affichée sous le champ sinon, pas de redirection) puis
+  navigue **dans le même onglet** vers `apercu.html`. Cette page génère
+  elle-même un QR qui encode sa propre URL, et son bouton « Retour au site »
+  ramène vers `index.html#demo` avec les mêmes paramètres, qui repréremplissent
+  le formulaire — la boucle complète décrite dans le brief.
+- **Quatre nouvelles sections**, insérées sans déplacer les anciennes : *Ce
+  que vous recevez* (le kit, dessiné en CSS/SVG — chevalet, autocollant, carte
+  NFC, page), *Adapté à votre métier* (4 secteurs en onglets), *Calculateur
+  d'avis* (un curseur, un chiffre, une hypothèse affichée en clair — jamais
+  un chiffre gonflé), *Après l'inscription* (le déroulé jour par jour).
+- **FAQ étendue et section Martinique nommée** : la FAQ répond maintenant à
+  12 questions dont celles imposées (autorisation Google, engagement,
+  résiliation, clients sans smartphone…) ; la section pilote nomme
+  **Maison Blanche**, restaurant pierrade à Fort-de-France, sans inventer de
+  témoignage ni de chiffre de résultat.
+- **Repère de progression** : fine barre sous le header collant, largeur liée
+  au scroll (`#progression-barre`) — discrète, pas un menu à onglets.
+
 ## Nouveautés V2
 
 - **Le formulaire « Demander ma démo » redirige réellement** vers une page
@@ -66,8 +100,8 @@ assets/
     legal.css           Styles des pages mentions-legales.html, confidentialite.html, 404.html
     fonts.css           Déclarations @font-face pour les polices auto-hébergées
   js/
-    main.js             Démo interactive (formulaire → aperçu → QR/NFC), révélation au scroll, formulaire de contact → redirection
-    apercu.js           Lit les paramètres d'URL (?nom=...&secteur=...&couleur=...&depuis=...) et personnalise apercu.html
+    main.js             Démo interactive (formulaire → aperçu → QR/NFC), hero animé, onglets métier, calculateur, révélation au scroll, formulaire de contact → mailto
+    apercu.js           Lit les paramètres d'URL (?nom=...&secteur=...&couleur=...&accroche=...&depuis=...), personnalise apercu.html et y génère son propre QR
     qrcode-lib.js        Bibliothèque tierce vendorisée pour générer le QR code (voir Crédits)
   fonts/
     bungee-*.woff2, karla-*.woff2, ibmplexmono-*.woff2   Sous-ensembles latins auto-hébergés
@@ -105,8 +139,9 @@ jour en direct :
 2. Le QR code, dessiné sur un `<canvas>` à partir de la bibliothèque
    vendorisée `qrcode-lib.js` — aucune donnée n'est envoyée à un serveur,
    tout est calculé dans le navigateur.
-3. Le lien « Ouvrir la page », qui pointe réellement vers `apercu.html` avec
-   les valeurs saisies passées en paramètres d'URL.
+3. Le bouton « Voir ma page en ligne », qui pointe réellement vers
+   `apercu.html` avec les valeurs saisies (`nom`, `secteur`, `couleur`,
+   `accroche`) passées en paramètres d'URL.
 
 Le QR code encode l'URL absolue de `apercu.html` (résolue via
 `window.location.href`), donc si vous hébergez ce site sur un vrai domaine,
@@ -114,50 +149,74 @@ le QR généré par la démo est un vrai QR scannable de bout en bout.
 
 Un sélecteur « QR code / Puce NFC » bascule entre le canvas du QR et un
 pictogramme NFC (onde qui pulse doucement, respecte `prefers-reduced-
-motion`) — les deux mènent au même lien « Ouvrir la page », pour rappeler
-que ce sont deux portes d'entrée équivalentes vers la même page.
+motion`) — les deux mènent au même bouton « Voir ma page en ligne », pour
+rappeler que ce sont deux portes d'entrée équivalentes vers la même page.
 
-`apercu.html` lit ces paramètres (`nom`, `secteur`, `couleur`) et génère une
-page personnalisée. Les entrées sont systématiquement échappées
-(`textContent`, jamais `innerHTML`) et la couleur est validée par une regex
-hexadécimale stricte avant d'être appliquée, pour éviter toute injection via
-l'URL. Le bouton « Voir mon avis Google » de cette page ne simule pas
-l'interface de Google (nous n'avons pas de raison de la reproduire) : il
-affiche une explication stylisée dans le langage visuel du site.
+**Le parcours complet** : le champ « Nom du commerce » est obligatoire pour
+la redirection — le laisser vide affiche une erreur sous le champ et
+n'envoie nulle part (`#demo-nom-erreur`). Une fois validé, le clic navigue
+**dans le même onglet** vers `apercu.html?nom=...&secteur=...&couleur=...&accroche=...`
+— comme le ferait un vrai client qui scanne. `apercu.html` lit ces
+paramètres et génère la page :
+
+- Les entrées sont systématiquement échappées (`textContent`, jamais
+  `innerHTML`) : un nom du type `<img src=x onerror=...>` s'affiche tel
+  quel, il ne s'exécute jamais. Testé.
+- La couleur est validée par une regex hexadécimale stricte ; un nom très
+  long est tronqué et coupe proprement (`overflow-wrap: anywhere`) plutôt
+  que de déborder ; sans aucun paramètre, la page affiche l'exemple
+  cohérent « Le Bon Poulet » plutôt qu'une page cassée.
+- La phrase d'accroche du secteur s'adapte automatiquement (6 secteurs +
+  repli générique) si le champ « accroche » de la démo est resté vide ;
+  sinon, la phrase saisie est utilisée telle quelle.
+- `apercu.html` génère lui-même un second QR (`#apercu-qr`) qui encode
+  l'URL complète de cette page : le scanner avec un téléphone ramène
+  exactement au même endroit.
+- Le bouton « ← Retour au site 5 Stars Review » (`#apercu-retour`) transmet
+  les mêmes paramètres vers `index.html#demo`, qui les relit au chargement
+  et repréremplit le formulaire de la démo — rien à retaper.
+- Le bouton « Voir mon avis Google » de cette page ne simule pas
+  l'interface de Google (nous n'avons pas de raison de la reproduire) : il
+  affiche une explication stylisée dans le langage visuel du site.
 
 ## Formulaire de contact
 
 Le formulaire de la section « Comment je commence » (`#contact-form`) est
-**front-end uniquement** — aucune requête n'est envoyée à un serveur
-(contrainte du projet : aucun backend, aucune clé d'API) — mais il a un vrai
-effet : il redirige vers `apercu.html`, la même page générée que celle
-ouverte par le QR code de la démo, avec un bandeau « aperçu de votre future
-page ». C'est la maquette du bon moment de bascule pour le visiteur : il
-voit sa page avant même d'avoir eu de réponse humaine.
+**front-end uniquement** (contrainte du projet : aucun backend, aucune clé
+d'API), mais il a un vrai effet : au clic sur « Demander ma démo », il
+**compose un email pré-rempli** (`mailto:contact@5starsreview.fr`) avec le
+sujet et le corps déjà écrits à partir des réponses du visiteur — il ne
+reste qu'à cliquer sur « Envoyer » dans son propre logiciel de messagerie.
+Rien ne part sans ce clic de sa part.
 
-- **Avec JavaScript** : le clic affiche une confirmation (le tampon, un
-  message), avec un bouton « Voir ma page maintenant » et une redirection
-  automatique après 4,5 secondes (délai volontairement long, annoncé à
-  l'écran, pour rester confortable au clavier et au lecteur d'écran).
-- **Sans JavaScript** : le formulaire garde `action="apercu.html"
-  method="get"` — la soumission classique du navigateur atterrit directement
-  sur `apercu.html` avec les bonnes valeurs dans l'URL, sans l'étape de
-  confirmation. Nuance : la personnalisation de cette page (nom, secteur,
-  couleur) est elle-même faite par `apercu.js` — un visiteur qui a
-  désactivé JavaScript sur tout le site verra donc la page générique par
-  défaut plutôt que sa version personnalisée. C'est la limite honnête d'un
-  site 100 % statique sans backend ; corriger ça demanderait un rendu côté
-  serveur.
-- Si le visiteur a déjà testé la démo plus haut sur la page, son nom, son
-  secteur et sa couleur (mémorisés dans `localStorage`, jamais transmis nul
-  part) préremplissent le formulaire au premier focus — pas besoin de tout
-  retaper.
+- **Email et téléphone en clair**, cliquables (`mailto:` / `tel:`), affichés
+  directement dans la section — pas besoin de passer par le formulaire pour
+  nous joindre.
+  Le numéro affiché (`+596 XXX XXX XXX`, dans `index.html`, section
+  Contact) est un gabarit à remplacer par le vrai numéro avant mise en
+  ligne — repérable par le commentaire `TODO` juste au-dessus dans le code.
+- **Avec JavaScript** : le clic construit l'URL `mailto:` (sujet = nom du
+  commerce, corps = commerce/secteur/coordonnées/message), déclenche
+  l'ouverture du client mail, puis affiche une confirmation honnête (« votre
+  messagerie va s'ouvrir », pas « demande reçue » — on ne peut pas savoir
+  s'il a réellement cliqué sur Envoyer) avec un lien de secours vers l'email
+  en clair et un lien optionnel « Voir un aperçu de ma page ».
+- **Sans JavaScript** : le `<form>` garde `action="mailto:contact@5starsreview.fr"
+  method="get"` — fallback natif du navigateur, imparfait (les champs
+  arrivent en vrac dans l'URL plutôt qu'en sujet/corps proprement formatés)
+  mais fonctionnel : un email s'ouvre quand même.
+- Si le visiteur a déjà testé la démo plus haut sur la page, son nom et son
+  secteur (mémorisés dans `localStorage`, jamais transmis nulle part)
+  préremplissent le formulaire au premier focus — pas besoin de tout
+  retaper. La couleur choisie dans la démo est réutilisée pour le lien
+  optionnel vers l'aperçu.
 
-Avant mise en ligne réelle, il faut relier ce point d'entrée à un vrai canal
-de suivi (endpoint email, CRM, formulaire tiers type Netlify Forms/
-Formspree…) — la redirection vers l'aperçu peut rester telle quelle en plus
-de cet envoi. Le point d'intégration est le gestionnaire
-`contactForm.addEventListener("submit", ...)` dans `assets/js/main.js`.
+**Point d'intégration futur (webhook n8n)** : pour capter aussi les leads
+dans un CRM ou un tableur en plus de l'email, le point d'ajout est
+commenté explicitement dans `assets/js/main.js` juste avant
+`window.location.href = mailtoUrl` — il suffit d'y ajouter un
+`fetch("https://VOTRE-INSTANCE-N8N/webhook/...", { method: "POST", body:
+JSON.stringify({ nom, secteur, coordonnees, message }) })`.
 
 ## Accessibilité
 
@@ -174,9 +233,15 @@ de cet envoi. Le point d'intégration est le gestionnaire
 - La FAQ utilise `<details>/<summary>` natifs : clavier, lecteurs d'écran et
   fonctionnement sans JavaScript sont gérés par le navigateur, pas par du
   code maison.
-- La redirection automatique du formulaire de contact (voir plus haut) est
-  annoncée à l'écran avant de se produire et reste évitable/accélérable via
-  un bouton — pas de changement de contexte surprise.
+- Les onglets « Adapté à votre métier » et QR/NFC utilisent `aria-pressed`
+  et sont activables au clavier (`Entrée`/`Espace` sur un `<button>` natif) ;
+  le curseur du calculateur est un `<input type="range">` natif, donc
+  pilotable aux flèches sans JavaScript supplémentaire.
+- L'animation du hero (le geste « scan ») ne joue qu'une fois et respecte
+  `prefers-reduced-motion` : sous ce réglage, le trait et l'écran du
+  téléphone apparaissent directement dans leur état final, sans délai ni
+  transition perceptible (`transition-delay` est aussi neutralisé, pas
+  seulement `transition-duration`).
 
 ## Crédits
 
@@ -194,11 +259,18 @@ de cet envoi. Le point d'intégration est le gestionnaire
 ## Hypothèses à trancher avec le client
 
 - Les tarifs (Starter 49€, Pro 79€, Business 99€) sont les hypothèses de
-  lancement transmises dans le brief, affichées telles quelles.
-- La section « pilote » ne cite pas de commerce ni de chiffre précis : au
-  moment de la rédaction, aucun commerce pilote n'était encore engagé.
-  Dès qu'il l'est, remplacer le texte générique par son nom et, si les
-  résultats le permettent, un chiffre réel.
+  lancement transmises dans le brief, affichées telles quelles — inchangés
+  depuis la V1.
+- La section « pilote » nomme Maison Blanche (restaurant pierrade, Fort-de-
+  France) mais ne cite volontairement aucun chiffre de résultat : le pilote
+  vient de démarrer. Dès que des retours existent, remplacer le paragraphe
+  générique de `#pilote` par un chiffre réel — jamais un chiffre inventé.
+- Le taux de conversion du calculateur d'avis (`#calculateur`, 5 %,
+  `TAUX_ESTIME` dans `assets/js/main.js`) est une hypothèse éditoriale
+  raisonnable, pas une mesure. À ajuster dès que le pilote Maison Blanche
+  donne un vrai chiffre.
+- Le numéro de téléphone affiché en section Contact (`+596 XXX XXX XXX`)
+  est un gabarit — voir « Formulaire de contact » plus haut.
 - `mentions-legales.html` et `confidentialite.html` contiennent des
   `[champs à compléter]` (raison sociale, SIRET, adresse, hébergeur,
   contact RGPD…) plutôt que des informations inventées. Ce sont les seules

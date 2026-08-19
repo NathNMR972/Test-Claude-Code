@@ -30,6 +30,55 @@
   }
 
   /* ---------------------------------------------------------------------
+     Repère de progression discret sous le header collant.
+     ------------------------------------------------------------------- */
+  var barreProgression = document.getElementById("progression-barre");
+  if (barreProgression) {
+    var tickProgrammee = false;
+    function majProgression() {
+      tickProgrammee = false;
+      var hauteurDefilable = document.documentElement.scrollHeight - window.innerHeight;
+      var ratio = hauteurDefilable > 0 ? window.scrollY / hauteurDefilable : 0;
+      barreProgression.style.transform = "scaleX(" + Math.min(1, Math.max(0, ratio)) + ")";
+    }
+    window.addEventListener(
+      "scroll",
+      function () {
+        if (!tickProgrammee) {
+          tickProgrammee = true;
+          window.requestAnimationFrame(majProgression);
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener("resize", majProgression);
+    majProgression();
+  }
+
+  /* ---------------------------------------------------------------------
+     Vitrine du hero : le geste "scan" joue une seule fois, au chargement.
+     ------------------------------------------------------------------- */
+  var sceneHero = document.getElementById("hero-scene");
+  if (sceneHero) {
+    if ("IntersectionObserver" in window) {
+      var observateurHero = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entree) {
+            if (entree.isIntersecting) {
+              sceneHero.classList.add("scan-joue");
+              observateurHero.unobserve(sceneHero);
+            }
+          });
+        },
+        { threshold: 0.4 }
+      );
+      observateurHero.observe(sceneHero);
+    } else {
+      sceneHero.classList.add("scan-joue");
+    }
+  }
+
+  /* ---------------------------------------------------------------------
      Secteurs d'activité : libellé affiché + icône dans l'aperçu.
      ------------------------------------------------------------------- */
   var SECTEURS = {
@@ -82,6 +131,8 @@
   if (demoForm) {
     var champNom = document.getElementById("demo-nom");
     var champSecteur = document.getElementById("demo-secteur");
+    var champAccroche = document.getElementById("demo-accroche");
+    var erreurNom = document.getElementById("demo-nom-erreur");
     var couleurPerso = document.getElementById("demo-couleur-perso");
     var pastilles = Array.prototype.slice.call(
       document.querySelectorAll("#demo-couleurs .pastille[data-couleur]")
@@ -95,11 +146,47 @@
     var qrUrlLegende = document.getElementById("demo-url");
     var lienOuvrir = document.getElementById("demo-ouvrir");
     var canvas = document.getElementById("demo-qr");
+    var COULEUR_VALIDE_DEMO = /^#[0-9a-fA-F]{6}$/;
+
+    // Un visiteur qui revient depuis apercu.html (bouton "Retour au site")
+    // retrouve ses champs : la page les transmet en paramètres d'URL.
+    (function preremplirDepuisURL() {
+      var params = new URLSearchParams(window.location.search);
+      var nomURL = params.get("nom");
+      var secteurURL = params.get("secteur");
+      var couleurURL = params.get("couleur");
+      var accrocheURL = params.get("accroche");
+
+      if (nomURL) champNom.value = nomURL.slice(0, 40);
+      if (secteurURL && SECTEURS[secteurURL]) champSecteur.value = secteurURL;
+      if (accrocheURL && champAccroche) champAccroche.value = accrocheURL.slice(0, 70);
+      if (couleurURL && COULEUR_VALIDE_DEMO.test(couleurURL)) {
+        var correspond = pastilles.some(function (b) {
+          var estCelleci = b.getAttribute("data-couleur").toLowerCase() === couleurURL.toLowerCase();
+          b.setAttribute("aria-checked", String(estCelleci));
+          return estCelleci;
+        });
+        if (!correspond) {
+          pastilles.forEach(function (b) {
+            b.setAttribute("aria-checked", "false");
+          });
+          couleurPerso.value = couleurURL;
+        }
+      }
+    })();
+
+    function couleurActive() {
+      var choisie = pastilles.filter(function (b) {
+        return b.getAttribute("aria-checked") === "true";
+      })[0];
+      return choisie ? choisie.getAttribute("data-couleur") : couleurPerso.value;
+    }
 
     var etat = {
       nom: champNom.value || "Le Bon Poulet",
       secteur: champSecteur.value || "restaurant",
-      couleur: "#E6355C"
+      accroche: champAccroche ? champAccroche.value : "",
+      couleur: couleurActive()
     };
 
     var minuteur = null;
@@ -110,6 +197,7 @@
 
     champNom.addEventListener("input", function () {
       etat.nom = champNom.value;
+      if (champNom.value.trim()) masquerErreurNom();
       appliquerTexteImmediat();
       programmerMiseAJour();
     });
@@ -119,6 +207,13 @@
       appliquerTexteImmediat();
       programmerMiseAJour();
     });
+
+    if (champAccroche) {
+      champAccroche.addEventListener("input", function () {
+        etat.accroche = champAccroche.value;
+        programmerMiseAJour();
+      });
+    }
 
     pastilles.forEach(function (bouton) {
       bouton.addEventListener("click", function () {
@@ -156,18 +251,39 @@
       ecran.style.setProperty("--demo-accent", etat.couleur);
     }
 
+    function masquerErreurNom() {
+      champNom.removeAttribute("aria-invalid");
+      erreurNom.hidden = true;
+    }
+
+    function afficherErreurNom() {
+      champNom.setAttribute("aria-invalid", "true");
+      erreurNom.hidden = false;
+      champNom.focus();
+    }
+
     function programmerMiseAJour() {
       window.clearTimeout(minuteur);
       minuteur = window.setTimeout(genererApercu, 180);
     }
 
-    function genererApercu() {
+    function genererApercu(options) {
+      // Par défaut, un vrai choix du visiteur (saisie, changement de secteur,
+      // couleur) est mémorisé. L'appel d'initialisation (valeurs par défaut du
+      // balisage, personne n'a encore rien choisi) passe persister:false pour
+      // ne pas contaminer le préremplissage du formulaire de contact plus bas.
+      var persister = !options || options.persister !== false;
+
       var slug = slugifier(etat.nom);
-      var params = new URLSearchParams({
+      var paramsObjet = {
         nom: etat.nom.trim() || "Votre Commerce",
         secteur: etat.secteur,
         couleur: etat.couleur
-      });
+      };
+      if (etat.accroche && etat.accroche.trim()) {
+        paramsObjet.accroche = etat.accroche.trim();
+      }
+      var params = new URLSearchParams(paramsObjet);
       var urlRelative = "apercu.html?" + params.toString();
       var urlAffichee = "5starsreview.fr/avis/" + slug;
 
@@ -182,7 +298,9 @@
       }
       dessinerQR(urlAbsolue);
       rejouerTampon();
-      enregistrerEtat({ nom: etat.nom.trim(), secteur: etat.secteur, couleur: etat.couleur });
+      if (persister) {
+        enregistrerEtat({ nom: etat.nom.trim(), secteur: etat.secteur, couleur: etat.couleur });
+      }
     }
 
     function dessinerQR(texte) {
@@ -221,10 +339,21 @@
       tampon.classList.add("est-visible");
     }
 
-    // Initialisation avec les valeurs par défaut déjà présentes dans le balisage.
+    // Initialisation avec les valeurs par défaut déjà présentes dans le balisage
+    // (ou celles reprises depuis l'URL si le visiteur revient d'apercu.html).
+    appliquerTexteImmediat();
     appliquerCouleur();
-    genererApercu();
+    genererApercu({ persister: false });
     window.setTimeout(rejouerTampon, 450);
+
+    // "Valider" : on vérifie le champ obligatoire avant de rediriger réellement
+    // vers la page générée (même onglet, comme un vrai client qui scannerait).
+    lienOuvrir.addEventListener("click", function (e) {
+      if (!champNom.value.trim()) {
+        e.preventDefault();
+        afficherErreurNom();
+      }
+    });
 
     // Bascule QR code / Puce NFC : les deux mènent à la même page générée,
     // seule la façon de l'atteindre en salle change.
@@ -245,15 +374,37 @@
 
   /* ---------------------------------------------------------------------
      Formulaire de contact.
-     Sans JS : soumission classique (action="apercu.html" method="get"),
-     le navigateur atterrit directement sur la page générée.
-     Avec JS : confirmation, puis redirection vers la même page — en
-     réutilisant la couleur choisie dans la démo si le visiteur l'a essayée.
+     Sans backend possible (contrainte du projet), la solution qui fonctionne
+     vraiment sans serveur : composer un email pré-rempli (mailto:). Le clic
+     ouvre le logiciel de messagerie du visiteur avec le sujet et le corps
+     déjà écrits à partir de ses réponses ; il ne reste qu'à cliquer sur
+     « Envoyer » — rien ne part sans cette action de sa part.
+
+     Sans JS : action="mailto:contact@5starsreview.fr" method="get" sur le
+     <form> (voir index.html) — fallback imparfait mais fonctionnel, la
+     plupart des clients mail ouvrent quand même un brouillon.
+
+     Point d'intégration futur (webhook n8n) : pour capter aussi les leads
+     dans un CRM/tableur en plus de l'email, ajouter ici un
+     `fetch("https://VOTRE-INSTANCE-N8N/webhook/...", { method: "POST",
+     body: JSON.stringify({ nom, secteur, coordonnees, message }) })`
+     avant ou après la ligne `window.location.href = mailtoUrl` ci-dessous.
      ------------------------------------------------------------------- */
   var contactForm = document.getElementById("contact-form");
   if (contactForm) {
     var contactNom = document.getElementById("contact-nom");
     var contactSecteur = document.getElementById("contact-secteur");
+    var contactCoord = document.getElementById("contact-coord");
+    var contactMessage = document.getElementById("contact-message");
+    var LIBELLES_SECTEURS = {
+      restaurant: "Restaurant",
+      salon: "Salon de coiffure & institut",
+      garage: "Garage automobile",
+      hotel: "Hôtel",
+      cabinet: "Cabinet",
+      boutique: "Boutique / commerce",
+      autre: "Autre"
+    };
 
     // Préremplit au premier contact réel avec le formulaire (pas au chargement
     // de la page) pour refléter ce que le visiteur a exploré dans la démo,
@@ -274,39 +425,113 @@
       { once: true }
     );
 
-    var minuteurRedirection = null;
-
     contactForm.addEventListener("submit", function (e) {
       if (typeof contactForm.reportValidity === "function" && !contactForm.reportValidity()) {
         return;
       }
       e.preventDefault();
 
+      var nom = contactNom.value.trim();
+      var secteurLabel = LIBELLES_SECTEURS[contactSecteur.value] || contactSecteur.value;
+      var lignes = [
+        "Commerce : " + nom,
+        "Secteur : " + secteurLabel,
+        "Coordonnées : " + contactCoord.value.trim()
+      ];
+      if (contactMessage.value.trim()) {
+        lignes.push("", "Message :", contactMessage.value.trim());
+      }
+      var sujet = "Demande de démo — " + nom;
+      var mailtoUrl =
+        "mailto:contact@5starsreview.fr?subject=" +
+        encodeURIComponent(sujet) +
+        "&body=" +
+        encodeURIComponent(lignes.join("\n"));
+
+      window.location.href = mailtoUrl;
+
+      var confirmation = document.getElementById("contact-confirmation");
+      var lienVoirPage = document.getElementById("contact-voir-page");
       var couleur = (lireEtatEnregistre() || {}).couleur || "#E6355C";
       var params = new URLSearchParams({
-        nom: contactNom.value.trim() || "Votre Commerce",
+        nom: nom || "Votre Commerce",
         secteur: contactSecteur.value,
         couleur: couleur,
         depuis: "contact"
       });
-      var urlApercu = "apercu.html?" + params.toString();
-
-      var confirmation = document.getElementById("contact-confirmation");
-      var lienVoirPage = document.getElementById("contact-voir-page");
-      lienVoirPage.setAttribute("href", urlApercu);
-      lienVoirPage.addEventListener("click", function () {
-        window.clearTimeout(minuteurRedirection);
-      });
+      lienVoirPage.setAttribute("href", "apercu.html?" + params.toString());
 
       contactForm.setAttribute("hidden", "");
       confirmation.removeAttribute("hidden");
       confirmation.setAttribute("tabindex", "-1");
       confirmation.focus();
-
-      window.clearTimeout(minuteurRedirection);
-      minuteurRedirection = window.setTimeout(function () {
-        window.location.href = urlApercu;
-      }, 4500);
     });
+  }
+
+  /* ---------------------------------------------------------------------
+     Adapté à votre métier — quatre secteurs, un fait physique à la fois.
+     ------------------------------------------------------------------- */
+  var FAITS_METIER = {
+    restaurant: {
+      ou: "Sur la table ou l'addition, à portée de main pendant le repas.",
+      quand: "Juste après le dessert, pendant qu'on attend la note.",
+      change: "Un avis qui parle de l'accueil et du plat du jour pèse plus qu'une publicité."
+    },
+    salon: {
+      ou: "Au poste de coiffage ou à la caisse, là où on règle.",
+      quand: "Au moment de payer, cheveux encore frais — l'effet est encore visible.",
+      change: "Un nouveau client choisit rarement un salon sans avis récents à montrer."
+    },
+    garage: {
+      ou: "Au comptoir d'accueil, ou agrafé à la facture.",
+      quand: "À la restitution du véhicule, quand le problème vient d'être réglé.",
+      change: "La confiance compte plus ici qu'ailleurs — un avis rassure avant même le prochain devis."
+    },
+    hotel: {
+      ou: "À l'accueil, ou posé dans la chambre.",
+      quand: "Au moment du check-out, l'esprit encore dans le séjour.",
+      change: "Le classement dans les résultats de recherche dépend directement du nombre d'avis récents."
+    }
+  };
+
+  var boutonsMetier = Array.prototype.slice.call(document.querySelectorAll(".metier-btn"));
+  if (boutonsMetier.length) {
+    var metierOu = document.getElementById("metier-ou");
+    var metierQuand = document.getElementById("metier-quand");
+    var metierChange = document.getElementById("metier-change");
+
+    boutonsMetier.forEach(function (bouton) {
+      bouton.addEventListener("click", function () {
+        boutonsMetier.forEach(function (b) {
+          b.setAttribute("aria-pressed", String(b === bouton));
+        });
+        var faits = FAITS_METIER[bouton.getAttribute("data-secteur")];
+        if (!faits) return;
+        metierOu.textContent = faits.ou;
+        metierQuand.textContent = faits.quand;
+        metierChange.textContent = faits.change;
+      });
+    });
+  }
+
+  /* ---------------------------------------------------------------------
+     Calculateur d'avis — une hypothèse affichée, pas un chiffre gonflé.
+     ------------------------------------------------------------------- */
+  var curseurClients = document.getElementById("calc-clients");
+  if (curseurClients) {
+    var TAUX_ESTIME = 0.05; // affiché en toutes lettres dans le texte à côté
+    var JOURS_PAR_MOIS = 30;
+    var valeurClients = document.getElementById("calc-clients-valeur");
+    var chiffreAvis = document.getElementById("calc-chiffre");
+
+    function majCalculateur() {
+      var clients = Number(curseurClients.value);
+      var avis = Math.round(clients * JOURS_PAR_MOIS * TAUX_ESTIME);
+      valeurClients.textContent = clients;
+      chiffreAvis.textContent = avis;
+    }
+
+    curseurClients.addEventListener("input", majCalculateur);
+    majCalculateur();
   }
 })();

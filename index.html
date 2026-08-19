@@ -62,6 +62,11 @@
     <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="M5 4h3l2 5-2.2 1.3a11.5 11.5 0 0 0 5.9 5.9L15 14l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/>
   </symbol>
 
+  <symbol id="icone-email" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.75"/>
+    <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="m4 6.5 8 6 8-6"/>
+  </symbol>
+
   <symbol id="icone-bouclier" viewBox="0 0 24 24">
     <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" d="M12 3.2 19 6v6c0 5-3.3 7.6-7 9.3-3.7-1.7-7-4.3-7-9.3V6l7-2.8Z"/>
     <path fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" d="m9 12.2 2 2 4-4.2"/>
@@ -77,6 +82,37 @@
     <path class="nfc-onde nfc-onde-1" d="M 31.2,67.2 A 20,20 0 0 1 68.8,67.2" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
     <path class="nfc-onde nfc-onde-2" d="M 19.9,63.1 A 32,32 0 0 1 80.1,63.1" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
     <path class="nfc-onde nfc-onde-3" d="M 8.7,59.0 A 44,44 0 0 1 91.3,59.0" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" opacity="0.45"/>
+  </symbol>
+
+  <!-- Motif de type QR, décoratif (non scannable) : sert d'illustration sur le
+       chevalet du hero et sur le kit "ce que vous recevez". -->
+  <symbol id="motif-qr-decor" viewBox="0 0 54 54">
+    <rect x="0" y="0" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3"/>
+    <rect x="5" y="5" width="8" height="8" fill="currentColor"/>
+    <rect x="36" y="0" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3"/>
+    <rect x="41" y="5" width="8" height="8" fill="currentColor"/>
+    <rect x="0" y="36" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3"/>
+    <rect x="5" y="41" width="8" height="8" fill="currentColor"/>
+    <rect x="24" y="6" width="6" height="6" fill="currentColor"/>
+    <rect x="6" y="18" width="6" height="6" fill="currentColor"/>
+    <rect x="12" y="18" width="6" height="6" fill="currentColor"/>
+    <rect x="30" y="18" width="6" height="6" fill="currentColor"/>
+    <rect x="36" y="18" width="6" height="6" fill="currentColor"/>
+    <rect x="42" y="18" width="6" height="6" fill="currentColor"/>
+    <rect x="48" y="18" width="6" height="6" fill="currentColor"/>
+    <rect x="30" y="24" width="6" height="6" fill="currentColor"/>
+    <rect x="48" y="24" width="6" height="6" fill="currentColor"/>
+    <rect x="6" y="30" width="6" height="6" fill="currentColor"/>
+    <rect x="30" y="30" width="6" height="6" fill="currentColor"/>
+    <rect x="42" y="30" width="6" height="6" fill="currentColor"/>
+    <rect x="48" y="30" width="6" height="6" fill="currentColor"/>
+    <rect x="42" y="36" width="6" height="6" fill="currentColor"/>
+    <rect x="48" y="36" width="6" height="6" fill="currentColor"/>
+    <rect x="18" y="42" width="6" height="6" fill="currentColor"/>
+    <rect x="24" y="42" width="6" height="6" fill="currentColor"/>
+    <rect x="30" y="42" width="6" height="6" fill="currentColor"/>
+    <rect x="36" y="42" width="6" height="6" fill="currentColor"/>
+    <rect x="48" y="42" width="6" height="6" fill="currentColor"/>
   </symbol>
 </defs>
 </svg>
@@ -103,13 +139,14 @@
       <a href="#contact" class="btn btn-primary">Demander ma démo</a>
     </div>
   </div>
+  <div class="progression" aria-hidden="true"><span id="progression-barre"></span></div>
 </header>
 
 <main id="contenu">
 
   <!-- ============ HERO ============ -->
   <section class="hero" id="top">
-    <div class="container">
+    <div class="container hero-grille">
       <div class="hero-corps">
         <span class="hero-badge"><span class="point" aria-hidden="true"></span>Conçu et lancé en Martinique</span>
         <h1>Posez un QR code.<br><em>Récoltez des avis Google.</em></h1>
@@ -129,12 +166,42 @@
           <span>Pensé pour les commerçants qui n'ont pas le temps de courir après les avis — pas pour les spécialistes du marketing.</span>
         </div>
       </div>
+
+      <div class="hero-vitrine">
+        <div class="hero-scene" id="hero-scene">
+          <svg class="hero-lien-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path class="hero-lien-trait" d="M 16,60 Q 34,8 50,24" fill="none"/>
+          </svg>
+
+          <div class="hero-carte-qr">
+            <div class="hero-carte-qr-cadre">
+              <svg class="hero-carte-qr-motif" aria-hidden="true"><use href="#motif-qr-decor"/></svg>
+              <span class="hero-scan-ligne" aria-hidden="true"></span>
+            </div>
+            <p class="hero-carte-legende mono">Scannez-moi</p>
+          </div>
+
+          <div class="telephone hero-telephone">
+            <div class="telephone-ecran hero-ecran" style="--demo-accent: var(--soleil)">
+              <div class="ecran-scene">
+                <svg class="ecran-icone" aria-hidden="true"><use href="#icone-restaurant"/></svg>
+                <span class="ecran-nom">Maison Blanche</span>
+                <span class="ecran-secteur">Restaurant · Fort-de-France</span>
+                <span class="ecran-etoiles" aria-hidden="true">
+                  <svg width="14" height="14"><use href="#etoile-mini"/></svg>
+                  <svg width="14" height="14"><use href="#etoile-mini"/></svg>
+                  <svg width="14" height="14"><use href="#etoile-mini"/></svg>
+                  <svg width="14" height="14"><use href="#etoile-mini"/></svg>
+                  <svg width="14" height="14"><use href="#etoile-mini"/></svg>
+                </span>
+                <span class="ecran-cta">Voir mon avis Google</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="hero-vitrine-legende mono">Ce que voit un client attablé chez Maison Blanche, notre commerce pilote à Fort-de-France.</p>
+      </div>
     </div>
-    <svg class="ticket-fantome" viewBox="0 0 200 300" aria-hidden="true">
-      <rect x="4" y="4" width="192" height="292" rx="6" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 10" stroke-linecap="round"/>
-      <circle cx="100" cy="150" r="46" fill="none" stroke="currentColor" stroke-width="2"/>
-      <path fill="currentColor" d="M100 118l9 22 24 2-18 16 6 24-21-13-21 13 6-24-18-16 24-2z" opacity="0.8"/>
-    </svg>
   </section>
 
   <!-- ============ CONSTAT ============ -->
@@ -203,6 +270,51 @@
     </div>
   </section>
 
+  <!-- ============ CE QUE VOUS RECEVEZ ============ -->
+  <section class="section--dim" id="kit">
+    <div class="container">
+      <div class="kit-tete reveal">
+        <span class="kicker">Ce que vous recevez</span>
+        <h2>Un kit, pas un logiciel de plus.</h2>
+        <p class="lead">Un abonnement, ça ne se voit pas. Ce qui se pose sur le comptoir, si.</p>
+      </div>
+      <div class="kit-grille">
+        <article class="kit-item reveal">
+          <div class="kit-objet kit-objet--chevalet">
+            <svg class="kit-objet-qr" aria-hidden="true"><use href="#motif-qr-decor"/></svg>
+          </div>
+          <h3>Le chevalet de table</h3>
+          <p>Une petite carte debout, posée entre le sel et le poivre — ou sur l'addition.</p>
+        </article>
+        <article class="kit-item reveal">
+          <div class="kit-objet kit-objet--sticker">
+            <svg class="tampon" aria-hidden="true"><use href="#tampon-etoile"/></svg>
+          </div>
+          <h3>L'autocollant vitrine</h3>
+          <p>Collé sur la porte ou près de la caisse, visible avant même d'entrer.</p>
+        </article>
+        <article class="kit-item reveal">
+          <div class="kit-objet kit-objet--nfc">
+            <svg aria-hidden="true"><use href="#icone-nfc-signal"/></svg>
+          </div>
+          <h3>La carte NFC de comptoir</h3>
+          <p>On y pose son téléphone, sans ouvrir d'appareil photo ni viser un cadre.</p>
+        </article>
+        <article class="kit-item reveal">
+          <div class="kit-objet kit-objet--page">
+            <div class="kit-telephone">
+              <span class="kit-ligne kit-ligne--nom"></span>
+              <span class="kit-ligne kit-ligne--secteur"></span>
+              <span class="kit-ligne kit-ligne--cta"></span>
+            </div>
+          </div>
+          <h3>La page personnalisée</h3>
+          <p>À votre nom, vos couleurs — hébergée et tenue à jour par nos soins.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ DÉMO INTERACTIVE ============ -->
   <section class="demo" id="demo">
     <div class="container">
@@ -221,7 +333,8 @@
 
           <div class="champ">
             <label for="demo-nom">Nom du commerce</label>
-            <input type="text" id="demo-nom" name="nom" placeholder="Le Bon Poulet" maxlength="40" autocomplete="off">
+            <input type="text" id="demo-nom" name="nom" placeholder="Le Bon Poulet" maxlength="40" autocomplete="off" aria-describedby="demo-nom-erreur">
+            <p class="erreur-champ" id="demo-nom-erreur" role="alert" hidden>Indiquez le nom de votre commerce avant d'ouvrir la page.</p>
           </div>
 
           <div class="champ">
@@ -249,6 +362,11 @@
                 <input type="color" id="demo-couleur-perso" value="#E6355C" aria-label="Choisir une couleur personnalisée">
               </label>
             </div>
+          </div>
+
+          <div class="champ">
+            <label for="demo-accroche">Phrase d'accroche (facultatif)</label>
+            <input type="text" id="demo-accroche" name="accroche" placeholder="Le meilleur accueil du quartier" maxlength="70" autocomplete="off">
           </div>
 
           <p class="carnet-note">Ce que vous voyez à droite, c'est ce que verra votre client. Rien d'autre.</p>
@@ -290,9 +408,44 @@
               <p class="qr-legende mono">On approche le téléphone — pas de caméra à viser, pas d'appli à ouvrir</p>
             </div>
 
-            <a href="apercu.html" target="_blank" rel="noopener" class="qr-lien" id="demo-ouvrir">
-              Ouvrir la page <svg width="16" height="16" aria-hidden="true"><use href="#icone-fleche"/></svg>
+            <a href="apercu.html" class="btn btn-primary" id="demo-ouvrir">
+              Voir ma page en ligne <svg width="16" height="16" aria-hidden="true"><use href="#icone-fleche"/></svg>
             </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ADAPTÉ À VOTRE MÉTIER ============ -->
+  <section class="section--dim" id="metier">
+    <div class="container">
+      <div class="metier-tete reveal">
+        <span class="kicker">Adapté à votre métier</span>
+        <h2>Le geste change selon la salle.</h2>
+        <p class="lead">Quatre métiers, quatre façons de scanner. Choisissez le vôtre.</p>
+      </div>
+
+      <div class="metier-widget reveal">
+        <div class="metier-choix" role="group" aria-label="Choisir un secteur">
+          <button type="button" class="metier-btn" data-secteur="restaurant" aria-pressed="true">Restaurant</button>
+          <button type="button" class="metier-btn" data-secteur="salon" aria-pressed="false">Salon &amp; institut</button>
+          <button type="button" class="metier-btn" data-secteur="garage" aria-pressed="false">Garage</button>
+          <button type="button" class="metier-btn" data-secteur="hotel" aria-pressed="false">Hôtel</button>
+        </div>
+
+        <div class="metier-panneau" id="metier-panneau">
+          <div class="metier-fait">
+            <span class="mono">Où on le pose</span>
+            <p id="metier-ou">Sur la table ou l'addition, à portée de main pendant le repas.</p>
+          </div>
+          <div class="metier-fait">
+            <span class="mono">Quand ça scanne</span>
+            <p id="metier-quand">Juste après le dessert, pendant qu'on attend la note.</p>
+          </div>
+          <div class="metier-fait">
+            <span class="mono">Ce que ça change</span>
+            <p id="metier-change">Un avis qui parle de l'accueil et du plat du jour pèse plus qu'une publicité.</p>
           </div>
         </div>
       </div>
@@ -324,14 +477,39 @@
     <div class="container pilote-grille">
       <div class="pilote-texte reveal">
         <span class="pilote-repere"><svg aria-hidden="true"><use href="#icone-epingle"/></svg><span class="kicker">Martinique · premier terrain</span></span>
-        <h2>On commence chez nous, avant d'aller ailleurs.</h2>
-        <p>5 Stars Review démarre avec un commerce pilote en Martinique. On veut le voir tourner dans une vraie salle, sur une vraie addition, avant de le proposer à d'autres commerçants.</p>
-        <p>La suite : la France entière, commerce par commerce — sans perdre ce qui fait vivre un commerce de quartier, la relation avec le client qui revient.</p>
+        <h2>Maison Blanche a été notre premier test.</h2>
+        <p>Avant de vendre quoi que ce soit, on a installé 5 Stars Review chez Maison Blanche, un restaurant de pierrade à Fort-de-France. Une vraie salle, un vrai service, un vrai chevalet posé sur une vraie table — pas une démonstration en interne.</p>
+        <p>On n'a pas de chiffre à brandir : le pilote vient de démarrer. Ce qu'on peut dire honnêtement, c'est qu'on a préféré ce test-là à une promesse en l'air. La suite : la France entière, commerce par commerce.</p>
       </div>
       <div class="pilote-carte reveal">
-        <span class="mono">Prochaine étape</span>
-        <strong>France entière</strong>
-        <p>Le pilote sert à roder l'outil avant l'ouverture nationale. Chaque retour d'un commerçant compte plus qu'un plan marketing.</p>
+        <span class="mono">Le commerce pilote</span>
+        <strong>Maison Blanche</strong>
+        <p>Restaurant · Pierrade<br>Fort-de-France, Martinique</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CALCULATEUR D'AVIS ============ -->
+  <section id="calculateur">
+    <div class="container calc-bloc">
+      <div class="calc-tete reveal">
+        <span class="kicker">Une estimation, pas une promesse</span>
+        <h2>Combien d'avis en plus, à peu près ?</h2>
+      </div>
+
+      <div class="calc-widget reveal">
+        <div class="calc-champ">
+          <label for="calc-clients">Clients servis par jour</label>
+          <output for="calc-clients" id="calc-clients-valeur">40</output>
+        </div>
+        <input type="range" id="calc-clients" min="10" max="200" step="5" value="40" aria-describedby="calc-hypothese">
+
+        <div class="calc-resultat">
+          <span class="calc-chiffre" id="calc-chiffre">60</span>
+          <span class="calc-legende">avis en plus par mois, environ</span>
+        </div>
+
+        <p class="calc-hypothese mono" id="calc-hypothese">Hypothèse retenue : 5 % de vos clients scannent et laissent un avis. Une estimation prudente, pas une garantie — le vrai chiffre dépend de votre salle, de votre équipe et de vos clients.</p>
       </div>
     </div>
   </section>
@@ -396,6 +574,55 @@
     </div>
   </section>
 
+  <!-- ============ APRÈS L'INSCRIPTION ============ -->
+  <section id="apres">
+    <div class="container">
+      <div class="apres-tete reveal">
+        <span class="kicker">Après l'inscription</span>
+        <h2>Ce qui se passe ensuite, concrètement.</h2>
+        <p class="lead">Pas de zone grise entre le paiement et la première page en ligne.</p>
+      </div>
+
+      <ol class="deroule reveal">
+        <li class="deroule-etape">
+          <span class="mono deroule-jour">Jour 0</span>
+          <div>
+            <h3>Vous nous donnez vos infos</h3>
+            <p>Nom, logo, couleurs, secteur, lien vers votre fiche Google. Cinq minutes de votre côté.</p>
+          </div>
+        </li>
+        <li class="deroule-etape">
+          <span class="mono deroule-jour">J+1 à J+3</span>
+          <div>
+            <h3>On configure votre page</h3>
+            <p>On construit votre page et on programme votre QR code et votre puce NFC.</p>
+          </div>
+        </li>
+        <li class="deroule-etape">
+          <span class="mono deroule-jour">J+3 à J+5</span>
+          <div>
+            <h3>Le matériel arrive</h3>
+            <p>Par courrier, ou remis en main propre si vous êtes en Martinique.</p>
+          </div>
+        </li>
+        <li class="deroule-etape">
+          <span class="mono deroule-jour">À réception</span>
+          <div>
+            <h3>Vous posez le support</h3>
+            <p>Deux minutes, sur la table, le comptoir ou l'addition. Aucune compétence technique.</p>
+          </div>
+        </li>
+        <li class="deroule-etape">
+          <span class="mono deroule-jour">Ensuite</span>
+          <div>
+            <h3>Les avis arrivent</h3>
+            <p>Vous n'avez plus rien à faire. Pro et Business incluent un suivi des scans.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
   <!-- ============ FAQ ============ -->
   <section class="section--dim" id="faq">
     <div class="container faq-grille">
@@ -408,7 +635,11 @@
       <div class="faq-liste reveal">
         <details class="faq-item">
           <summary>Combien de temps avant d'être en ligne ?</summary>
-          <p>Deux à trois jours ouvrés entre votre inscription et votre page en ligne, une fois votre logo et vos couleurs reçus. Le QR code et la puce NFC suivent dans la foulée.</p>
+          <p>Deux à trois jours ouvrés entre votre inscription et votre page en ligne, une fois votre logo et vos couleurs reçus. Le QR code et la puce NFC suivent dans la foulée — le détail est dans « Après l'inscription » plus haut.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Combien de temps ça me prend, à moi ?</summary>
+          <p>Cinq minutes pour nous donner vos infos, puis deux minutes pour poser le support à réception. Le reste, c'est nous.</p>
         </details>
         <details class="faq-item">
           <summary>Je n'ai pas encore de fiche Google, ça marche quand même ?</summary>
@@ -419,16 +650,32 @@
           <p>Oui, imprimés et programmés par nos soins, prêts à poser sur la table, le comptoir ou l'addition. Le nombre de supports dépend de la formule choisie (voir Tarifs).</p>
         </details>
         <details class="faq-item">
-          <summary>Je change de local ou de nom, il faut tout refaire ?</summary>
-          <p>Non. Le QR et la puce pointent vers 5starsreview.fr, pas directement vers votre fiche Google — on met à jour la destination de notre côté, le support physique ne bouge pas.</p>
+          <summary>Faut-il une application pour mes clients ?</summary>
+          <p>Non. Un navigateur suffit — celui déjà installé sur leur téléphone. Rien à télécharger, rien à installer.</p>
         </details>
         <details class="faq-item">
-          <summary>Il y a un engagement ?</summary>
-          <p>Non, c'est mensuel et sans engagement long. Vous testez un mois, vous décidez ensuite de continuer ou non.</p>
+          <summary>Et si mes clients n'ont pas de smartphone ?</summary>
+          <p>Ça arrive, surtout avec une clientèle plus âgée. Votre équipe peut alors leur montrer la page sur sa propre tablette ou son téléphone au comptoir — le lien reste le même.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Le QR code fonctionne-t-il si je change de fiche Google, de local ou de nom ?</summary>
+          <p>Oui. Le QR et la puce pointent vers 5starsreview.fr, pas directement vers votre fiche Google — on met à jour la destination de notre côté, le support physique ne bouge pas.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Est-ce autorisé par Google ?</summary>
+          <p>Oui. Google interdit d'inciter à laisser un avis positif contre récompense, ou de filtrer les avis négatifs — on ne fait ni l'un ni l'autre. Un lien qui simplifie l'accès à votre fiche, sans rien trier, respecte leurs règles.</p>
         </details>
         <details class="faq-item">
           <summary>Et si un client laisse un avis négatif à cause du QR code ?</summary>
           <p>Il part vers Google comme n'importe quel autre avis. On ne filtre jamais — voir plus haut — et ça reste vrai même le jour où ça vous arrange moins.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Suis-je engagé sur la durée ?</summary>
+          <p>Non, c'est mensuel et sans engagement long. Vous testez un mois, vous décidez ensuite de continuer ou non.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Et si je change d'avis et veux arrêter ?</summary>
+          <p>Vous nous écrivez, on résilie à la fin du mois en cours. Pas de préavis de trois mois caché dans un contrat.</p>
         </details>
         <details class="faq-item">
           <summary>Ça remplace mes réseaux sociaux ou une agence marketing ?</summary>
@@ -446,14 +693,22 @@
         <h2>Demandez votre démo.<br>On configure votre page ensemble.</h2>
         <p class="lead">Cinq minutes suffisent pour voir votre page prendre forme, comme dans la démo plus haut — mais avec votre vrai logo et votre vraie fiche Google.</p>
         <ul class="contact-liste">
-          <li><svg aria-hidden="true"><use href="#icone-telephone"/></svg>Par téléphone, à un moment qui vous arrange.</li>
+          <li><svg aria-hidden="true"><use href="#icone-email"/></svg><a href="mailto:contact@5starsreview.fr">contact@5starsreview.fr</a></li>
+          <!-- TODO : remplacer par le vrai numéro avant mise en ligne (garder le format international +596). -->
+          <li><svg aria-hidden="true"><use href="#icone-telephone"/></svg><a href="tel:+596XXXXXXXX">+596 XXX XXX XXX</a></li>
           <li><svg aria-hidden="true"><use href="#icone-epingle"/></svg>Basés en Martinique — on connaît le rythme d'un commerce local.</li>
           <li><svg aria-hidden="true"><use href="#icone-bouclier"/></svg>Aucun engagement long : vous testez, vous décidez.</li>
         </ul>
       </div>
 
       <div class="reveal">
-        <form class="formulaire" id="contact-form" action="apercu.html" method="get">
+        <!-- Solution sans backend : le clic compose un email pré-rempli (mailto:).
+             Fallback natif sans JS : action="mailto:..." (imparfait mais fonctionnel,
+             la plupart des clients mail ouvrent un brouillon avec les champs en vrac).
+             Point d'intégration futur : remplacer/compléter le window.location.href
+             de assets/js/main.js par un fetch() vers un webhook n8n pour capter
+             aussi les leads dans un CRM, en plus (ou à la place) du mailto. -->
+        <form class="formulaire" id="contact-form" action="mailto:contact@5starsreview.fr" method="get">
           <div class="champ">
             <label for="contact-nom">Nom du commerce</label>
             <input type="text" id="contact-nom" name="nom" required autocomplete="organization">
@@ -479,15 +734,14 @@
             <textarea id="contact-message" name="message" placeholder="Un lien vers votre fiche Google, si vous l'avez sous la main."></textarea>
           </div>
           <button type="submit" class="btn btn-primary">Demander ma démo</button>
-          <p class="formulaire-pied">On vous montre tout de suite un aperçu de votre page. Réponse sous 24h ouvrées.</p>
+          <p class="formulaire-pied">Ouvre votre messagerie avec un email déjà rempli. Rien n'est envoyé sans votre clic « Envoyer ».</p>
         </form>
 
         <div class="formulaire confirmation" id="contact-confirmation" hidden>
           <svg class="tampon tampon--sceau" aria-hidden="true"><use href="#tampon-etoile"/></svg>
-          <h3>Demande reçue.</h3>
-          <p>On revient vers vous sous 24h ouvrées pour construire votre page ensemble. En attendant, voici à quoi elle pourrait ressembler.</p>
-          <a href="apercu.html" id="contact-voir-page" class="btn btn-primary">Voir ma page maintenant <svg width="16" height="16" aria-hidden="true"><use href="#icone-fleche"/></svg></a>
-          <p class="formulaire-pied" id="contact-redirection-note">Redirection automatique dans quelques secondes…</p>
+          <h3>Votre messagerie va s'ouvrir.</h3>
+          <p>Un email pré-rempli avec vos réponses vient de s'ouvrir dans votre logiciel de messagerie — il ne reste qu'à cliquer sur « Envoyer ». Rien ne s'est ouvert ? Écrivez-nous directement à <a href="mailto:contact@5starsreview.fr">contact@5starsreview.fr</a>.</p>
+          <a href="apercu.html" id="contact-voir-page" class="btn btn-ghost">Voir un aperçu de ma page <svg width="16" height="16" aria-hidden="true"><use href="#icone-fleche"/></svg></a>
         </div>
       </div>
     </div>
